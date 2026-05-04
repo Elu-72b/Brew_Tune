@@ -1,0 +1,28 @@
+services:
+  db:
+    image: postgres:17
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5433:5432"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    command: bin/rails server -b 0.0.0.0
+    volumes:
+      - .:/rails
+      - bundle_cache:/usr/local/bundle
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgres://postgres:password@db:5432/brew_tune_development
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
+  bundle_cache:
