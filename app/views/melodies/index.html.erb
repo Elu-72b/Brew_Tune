@@ -48,23 +48,23 @@
           <%# 2行目: 日付・音色 / 再生・X(右寄せ) %>
           <div class="flex items-center gap-2 mb-2">
             <span class="text-xs text-gray-400"><%= melody.created_at.strftime("%Y/%m/%d") %></span>
-            <div class="flex rounded overflow-hidden border border-gray-200" style="font-size:0.8rem;">
-              <button
-                data-action="click->playback#selectSoundType"
-                data-sound-type="synth"
-                data-playback-target="soundTypeButton"
-                style="padding:4px 12px;background:#e0e7ff;color:#4338ca;border-right:1px solid #d1d5db;">
-                シンセ
-              </button>
-              <button
-                data-action="click->playback#selectSoundType"
-                data-sound-type="piano"
-                data-playback-target="soundTypeButton"
-                style="padding:4px 12px;background:white;color:#6b7280;">
-                ピアノ
-              </button>
-            </div>
             <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
+              <div class="flex rounded overflow-hidden border border-gray-200" style="font-size:0.8rem;">
+                <button
+                  data-action="click->playback#selectSoundType"
+                  data-sound-type="synth"
+                  data-playback-target="soundTypeButton"
+                  style="padding:4px 12px;background:#e0e7ff;color:#4338ca;border-right:1px solid #d1d5db;">
+                  シンセ
+                </button>
+                <button
+                  data-action="click->playback#selectSoundType"
+                  data-sound-type="piano"
+                  data-playback-target="soundTypeButton"
+                  style="padding:4px 12px;background:white;color:#6b7280;">
+                  ピアノ
+                </button>
+              </div>
               <button data-action="click->playback#toggle"
                       data-playback-target="playButton"
                       style="padding:6px 16px;background:#4f46e5;color:white;font-size:0.875rem;border-radius:4px;font-weight:500;">
