@@ -1,4 +1,4 @@
-<div class="max-w-2xl mx-auto px-4 py-8">
+<div class="max-w-2xl mx-auto px-4 pt-4 pb-8">
   <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold">🎵 みんなのメロディ</h1>
     <%= link_to "＋ 作曲する", new_melody_path,
@@ -45,36 +45,38 @@
             <span class="text-xs text-gray-400">ニックネーム：</span><span class="text-sm text-gray-600"><%= melody.nickname %></span>
           </div>
 
-          <%# 2行目: 日付・音色・再生・X %>
-          <div class="flex items-center justify-end gap-2 mb-2">
-            <span class="text-xs text-gray-400 mr-auto"><%= melody.created_at.strftime("%Y/%m/%d") %></span>
-            <div class="flex rounded overflow-hidden border border-gray-200 text-xs">
+          <%# 2行目: 日付・音色 / 再生・X(右寄せ) %>
+          <div class="flex items-center gap-2 mb-2">
+            <span class="text-xs text-gray-400"><%= melody.created_at.strftime("%Y/%m/%d") %></span>
+            <div class="flex rounded overflow-hidden border border-gray-200" style="font-size:0.8rem;">
               <button
                 data-action="click->playback#selectSoundType"
                 data-sound-type="synth"
                 data-playback-target="soundTypeButton"
-                style="padding:2px 8px;background:#e0e7ff;color:#4338ca;border-right:1px solid #d1d5db;">
+                style="padding:4px 12px;background:#e0e7ff;color:#4338ca;border-right:1px solid #d1d5db;">
                 シンセ
               </button>
               <button
                 data-action="click->playback#selectSoundType"
                 data-sound-type="piano"
                 data-playback-target="soundTypeButton"
-                style="padding:2px 8px;background:white;color:#6b7280;">
+                style="padding:4px 12px;background:white;color:#6b7280;">
                 ピアノ
               </button>
             </div>
-            <button data-action="click->playback#toggle"
-                    data-playback-target="playButton"
-                    style="padding:6px 16px;background:#4f46e5;color:white;font-size:0.875rem;border-radius:4px;font-weight:500;">
-              ▶ 再生
-            </button>
-            <% tweet_text = melody.title.present? ? "🎵 「#{melody.title}」をBrewTuneで作りました！" : "🎵 BrewTuneでメロディを作りました！" %>
-            <%= link_to "https://twitter.com/intent/tweet?text=#{CGI.escape(tweet_text + " #BrewTune")}&url=#{CGI.escape(melody_url(melody))}",
-                target: "_blank", rel: "noopener noreferrer",
-                style: "padding:6px 16px;background:#6b7280;color:white;border-radius:4px;font-size:0.875rem;text-decoration:none;display:inline-flex;align-items:center;font-weight:500;" do %>
-              <span style="font-weight:700;">𝕏</span>
-            <% end %>
+            <div style="margin-left:auto;display:flex;align-items:center;gap:0.5rem;">
+              <button data-action="click->playback#toggle"
+                      data-playback-target="playButton"
+                      style="padding:6px 16px;background:#4f46e5;color:white;font-size:0.875rem;border-radius:4px;font-weight:500;">
+                ▶ 再生
+              </button>
+              <% tweet_text = melody.title.present? ? "🎵 「#{melody.title}」をBrewTuneで作りました！" : "🎵 BrewTuneでメロディを作りました！" %>
+              <%= link_to "https://twitter.com/intent/tweet?text=#{CGI.escape(tweet_text + " #BrewTune")}&url=#{CGI.escape(melody_url(melody))}",
+                  target: "_blank", rel: "noopener noreferrer",
+                  style: "padding:6px 16px;background:#6b7280;color:white;border-radius:4px;font-size:0.875rem;text-decoration:none;display:inline-flex;align-items:center;font-weight:500;" do %>
+                <span style="font-weight:700;">𝕏</span>
+              <% end %>
+            </div>
           </div>
 
           <%# 3行目: タグ %>
