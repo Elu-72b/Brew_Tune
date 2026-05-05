@@ -1,11 +1,17 @@
 import { Controller } from "@hotwired/stimulus"
+import * as Tone from "tone"
 
 export default class extends Controller {
-  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer"]
+  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton"]
 
   connect() {
     this.notes = []
     this.bpm = 80
+    this.synth = null
+  }
+
+  disconnect() {
+    this.stopPlayback()
   }
 
   addNote(event) {
@@ -34,9 +40,62 @@ export default class extends Controller {
   }
 
   clear() {
+    this.stopPlayback()
     this.notes = []
     this.updateGrid()
     this.updateHiddenFields()
+  }
+
+  async play() {
+    if (this.notes.length === 0) return
+
+    this.stopPlayback()
+    await Tone.start()
+
+    this.synth = new Tone.Synth({
+      oscillator: { type: "triangle" },
+      envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.5 }
+    }).toDestination()
+
+    const secPerBeat = 60 / this.bpm
+    const now = Tone.now()
+
+    this.notes.forEach((note, i) => {
+      this.synth.triggerAttackRelease(note.pitch, "8n", now + i * secPerBeat)
+    })
+
+    this.setPlayingState(true)
+
+    const totalDuration = (this.notes.length) * secPerBeat * 1000
+    this.playTimer = setTimeout(() => this.setPlayingState(false), totalDuration)
+  }
+
+  stopPlayback() {
+    if (this.playTimer) {
+      clearTimeout(this.playTimer)
+      this.playTimer = null
+    }
+    if (this.synth) {
+      this.synth.dispose()
+      this.synth = null
+    }
+    this.setPlayingState(false)
+  }
+
+  setPlayingState(playing) {
+    if (!this.hasPlayButtonTarget) return
+    const btn = this.playButtonTarget
+    if (playing) {
+      btn.textContent = "■ 停止"
+      btn.dataset.action = "click->compose#stopPlayback"
+      btn.classList.replace("bg-indigo-600", "bg-red-500")
+      btn.classList.replace("hover:bg-indigo-700", "hover:bg-red-600")
+    } else {
+      btn.textContent = "▶ 再生"
+      btn.dataset.action = "click->compose#play"
+      btn.classList.replace("bg-red-500", "bg-indigo-600")
+      btn.classList.replace("hover:bg-red-600", "hover:bg-indigo-700")
+    }
   }
 
   updateGrid() {
@@ -44,13 +103,10 @@ export default class extends Controller {
       const note = this.notes[i]
       if (note) {
         cell.textContent = note.pitch
-        cell.className = cell.className
-          .replace("border-dashed border-gray-300 text-gray-400", "")
-          .trim()
-          + " bg-indigo-100 border-indigo-400 text-indigo-700 font-medium"
+        cell.className = "h-10 rounded border-2 flex items-center justify-center text-xs bg-indigo-100 border-indigo-400 text-indigo-700 font-medium"
       } else {
-        cell.textContent = ""
         cell.className = "h-10 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400"
+        cell.textContent = ""
       }
     })
   }
