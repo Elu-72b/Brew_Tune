@@ -82,7 +82,7 @@
               <% tweet_text = melody.title.present? ? "🎵 「#{melody.title}」をBrewTuneで作りました！" : "🎵 BrewTuneでメロディを作りました！" %>
               <%= link_to "https://twitter.com/intent/tweet?text=#{CGI.escape(tweet_text + " #BrewTune")}&url=#{CGI.escape(melody_url(melody))}",
                   target: "_blank", rel: "noopener noreferrer",
-                  class: "px-3 py-1 bg-black text-white text-xs rounded hover:bg-gray-800 transition" do %>
+                  style: "padding:2px 10px;background:#6b7280;color:white;border-radius:4px;font-size:0.75rem;text-decoration:none;display:inline-flex;align-items:center;" do %>
                 <span style="font-weight:700;">𝕏</span>
               <% end %>
               <%= button_to "削除", melody_path(melody), method: :delete,

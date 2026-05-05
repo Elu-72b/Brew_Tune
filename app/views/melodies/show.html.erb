@@ -82,7 +82,7 @@
       <% tweet_url = melody_url(@melody) %>
       <%= link_to "https://twitter.com/intent/tweet?text=#{CGI.escape(tweet_text + " #BrewTune")}&url=#{CGI.escape(tweet_url)}",
           target: "_blank", rel: "noopener noreferrer",
-          class: "px-4 py-2 text-sm rounded bg-black text-white hover:bg-gray-800 transition flex items-center gap-1" do %>
+          style: "padding:8px 16px;background:#6b7280;color:white;border-radius:4px;font-size:0.875rem;text-decoration:none;display:inline-flex;align-items:center;gap:4px;" do %>
         <span style="font-weight:700;font-size:0.85rem;">𝕏</span> でシェア
       <% end %>
 
