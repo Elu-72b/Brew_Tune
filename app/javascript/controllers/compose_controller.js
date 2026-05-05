@@ -55,13 +55,19 @@ function detectChord(notes) {
 
 export default class extends Controller {
   static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton", "noteCount", "themeInput", "chordDisplay", "soundTypeButton"]
+  static values  = { initialNotes: Array, initialBpm: Number }
 
   connect() {
-    this.notes = []
-    this.bpm = 120
+    this.notes = this.hasInitialNotesValue ? [...this.initialNotesValue] : []
+    this.bpm   = (this.hasInitialBpmValue && this.initialBpmValue > 0) ? this.initialBpmValue : 120
     this.soundType = 'synth'
     this.synth = null
     this.selectedTags = []
+    if (this.notes.length > 0) {
+      this.updateGrid()
+      this.updateHiddenFields()
+    }
+    this.syncBpmButtons()
   }
 
   disconnect() {
@@ -123,7 +129,11 @@ export default class extends Controller {
   selectBpm(event) {
     this.bpm = parseInt(event.currentTarget.dataset.bpm)
     this.bpmInputTarget.value = this.bpm
+    this.syncBpmButtons()
+  }
 
+  syncBpmButtons() {
+    if (this.hasBpmInputTarget) this.bpmInputTarget.value = this.bpm
     this.bpmButtonTargets.forEach(btn => {
       const active = parseInt(btn.dataset.bpm) === this.bpm
       btn.className = btn.className

@@ -1,4 +1,6 @@
 class MelodiesController < ApplicationController
+  before_action :set_melody, only: [:show, :edit, :update, :destroy]
+
   def index
     @theme_filter = params[:theme]
     @melodies = Melody.order(created_at: :desc)
@@ -8,16 +10,12 @@ class MelodiesController < ApplicationController
         "(' / ' || theme || ' / ') LIKE ?", "% / #{escaped} / %"
       )
     end
-    @themes = Melody.pluck(:theme).compact.reject(&:blank?)
-      .flat_map { |t| t.split(/\s*\/\s*/) }.map(&:strip)
-      .reject(&:blank?).uniq.sort
+    @themes = all_tags
   end
 
   def new
     @melody = Melody.new
-    @themes = Melody.pluck(:theme).compact.reject(&:blank?)
-      .flat_map { |t| t.split(/\s*\/\s*/) }.map(&:strip)
-      .reject(&:blank?).uniq.sort
+    @themes = all_tags
   end
 
   def create
@@ -30,17 +28,50 @@ class MelodiesController < ApplicationController
       title:    params.dig(:melody, :title).presence
     )
     if @melody.save
-      redirect_to melodies_path
+      redirect_to melody_path(@melody)
     else
-      @themes = Melody.pluck(:theme).compact.reject(&:blank?)
-        .flat_map { |t| t.split(/\s*\/\s*/) }.map(&:strip)
-        .reject(&:blank?).uniq.sort
+      @themes = all_tags
       render :new, status: :unprocessable_entity
     end
   end
 
+  def show
+  end
+
+  def edit
+    @themes = all_tags
+  end
+
+  def update
+    notes = JSON.parse(params.dig(:melody, :notes_json) || @melody.notes.to_json)
+    if @melody.update(
+      nickname: params.dig(:melody, :nickname),
+      bpm:      params.dig(:melody, :bpm).to_i,
+      notes:    notes,
+      theme:    params.dig(:melody, :theme).presence,
+      title:    params.dig(:melody, :title).presence
+    )
+      redirect_to melody_path(@melody)
+    else
+      @themes = all_tags
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
   def destroy
-    Melody.find(params[:id]).destroy
+    @melody.destroy
     redirect_to melodies_path
+  end
+
+  private
+
+  def set_melody
+    @melody = Melody.find(params[:id])
+  end
+
+  def all_tags
+    Melody.pluck(:theme).compact.reject(&:blank?)
+      .flat_map { |t| t.split(/\s*\/\s*/) }.map(&:strip)
+      .reject(&:blank?).uniq.sort
   end
 end
