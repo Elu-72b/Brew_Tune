@@ -113,14 +113,10 @@ export default class extends Controller {
 
   updateHiddenFields() {
     this.notesContainerTarget.innerHTML = ""
-    this.notes.forEach((note, i) => {
-      ["pitch", "time"].forEach(key => {
-        const input = document.createElement("input")
-        input.type = "hidden"
-        input.name = `melody[notes][${i}][${key}]`
-        input.value = note[key]
-        this.notesContainerTarget.appendChild(input)
-      })
-    })
+    const input = document.createElement("input")
+    input.type = "hidden"
+    input.name = "melody[notes_json]"
+    input.value = JSON.stringify(this.notes)
+    this.notesContainerTarget.appendChild(input)
   }
 }
