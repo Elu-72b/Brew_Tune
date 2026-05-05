@@ -1,0 +1,54 @@
+<div class="max-w-2xl mx-auto px-4 py-8">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">🎵 みんなのメロディ</h1>
+    <%= link_to "＋ 作曲する", new_melody_path,
+        class: "px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition" %>
+  </div>
+
+  <% if @melodies.empty? %>
+    <p class="text-center text-gray-400 py-16">まだ投稿がありません</p>
+  <% else %>
+    <div class="space-y-4">
+      <% @melodies.each do |melody| %>
+        <div class="border border-gray-200 rounded-lg p-4 bg-white shadow-sm"
+             data-controller="playback"
+             data-playback-notes-value="<%= melody.notes.to_json %>"
+             data-playback-bpm-value="<%= melody.bpm %>">
+
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <span class="font-medium text-gray-800"><%= melody.nickname %></span>
+              <span class="ml-2 text-xs text-gray-400">BPM <%= melody.bpm %></span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-gray-400"><%= melody.created_at.strftime("%Y/%m/%d %H:%M") %></span>
+              <button data-action="click->playback#toggle"
+                      data-playback-target="playButton"
+                      class="px-4 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition">
+                ▶ 再生
+              </button>
+            </div>
+          </div>
+
+          <%# ノートグリッド（読み取り専用）%>
+          <div class="gap-1" style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr));">
+            <% 16.times do |i| %>
+              <% note = melody.notes[i] %>
+              <% cell_style = if note.nil?
+                   "bg-gray-100 border border-gray-200 text-gray-300"
+                 elsif note["pitch"] == "R"
+                   "bg-gray-50 border border-gray-300 text-gray-400"
+                 else
+                   "bg-indigo-100 border border-indigo-300 text-indigo-600 font-medium"
+                 end %>
+              <div class="h-7 min-w-0 overflow-hidden rounded flex items-center justify-center <%= cell_style %>"
+                   style="font-size: 0.6rem;">
+                <%= note.nil? ? "" : (note["pitch"] == "R" ? "𝄽" : note["pitch"]) %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
