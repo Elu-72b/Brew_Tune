@@ -66,6 +66,14 @@
     <% end %>
   </div>
 
+  <%# 休符ボタン %>
+  <div class="flex justify-center mb-4">
+    <button data-action="click->compose#addRest"
+            class="px-6 py-2 rounded border-2 border-gray-400 text-gray-600 font-medium hover:bg-gray-100 transition text-sm">
+      𝄽 休符
+    </button>
+  </div>
+
   <%# 操作ボタン %>
   <div class="flex justify-center gap-4 mb-8">
     <button data-action="click->compose#play"
