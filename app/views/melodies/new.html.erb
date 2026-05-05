@@ -21,10 +21,11 @@
   </div>
 
   <%# 16マスグリッド %>
-  <div class="gap-1 mb-6" style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr));" data-compose-target="grid">
+  <div class="mb-6" style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); gap: 0.25rem;"
+       data-compose-target="grid">
     <% 16.times do %>
       <div data-compose-target="cell"
-           class="h-10 min-w-0 overflow-hidden rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">
+           style="height: 2.5rem; min-width: 0; overflow: hidden; border-radius: 0.25rem; border: 2px dashed #d1d5db; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #9ca3af;">
       </div>
     <% end %>
   </div>
@@ -33,8 +34,6 @@
   <%
     white_keys = %w[C4 D4 E4 F4 G4 A4 B4 C5 D5 E5 F5 G5 A5 B5 C6]
     total = white_keys.size.to_f
-    # 黒鍵: gap_index = 境界の左の白鍵インデックス+1（白鍵何本目の右に置くか）
-    # left% = gap_index/total*100 - black_width/2  (black_width=4%)
     black_keys = [
       { note: "C#4", gap: 1 }, { note: "D#4", gap: 2 },
       { note: "F#4", gap: 4 }, { note: "G#4", gap: 5 }, { note: "A#4", gap: 6 },
@@ -42,15 +41,19 @@
       { note: "F#5", gap: 11 }, { note: "G#5", gap: 12 }, { note: "A#5", gap: 13 }
     ]
   %>
-  <div class="relative w-full select-none mb-6" style="height: 7rem;">
-    <%# 白鍵 %>
-    <div class="flex h-full">
+  <div class="relative select-none mb-6" style="height: 7rem;">
+    <%# 白鍵: absolute + CSS Grid で幅を親に固定 %>
+    <div class="absolute inset-0"
+         style="display: grid; grid-template-columns: repeat(15, 1fr);">
       <% white_keys.each do |note| %>
         <button
           data-action="click->compose#addNote"
           data-note="<%= note %>"
-          class="flex-1 h-full bg-white border border-gray-400 rounded-b hover:bg-indigo-100 active:bg-indigo-200 relative z-0">
-          <span class="absolute bottom-1 left-0 right-0 text-center text-[9px] text-gray-400"><%= note %></span>
+          style="background: white; border: 1px solid #9ca3af; border-radius: 0 0 0.25rem 0.25rem; position: relative; cursor: pointer;"
+          onmouseover="this.style.background='#e0e7ff'"
+          onmouseout="this.style.background='white'"
+          onmousedown="this.style.background='#c7d2fe'">
+          <span style="position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: #9ca3af;"><%= note %></span>
         </button>
       <% end %>
     </div>
@@ -60,8 +63,10 @@
       <button
         data-action="click->compose#addNote"
         data-note="<%= key[:note] %>"
-        class="absolute top-0 bg-gray-900 rounded-b z-10 hover:bg-indigo-800 active:bg-indigo-700"
-        style="left: <%= left %>%; width: 4%; height: 60%;">
+        style="position: absolute; top: 0; left: <%= left %>%; width: 4%; height: 60%; background: #111827; border-radius: 0 0 0.25rem 0.25rem; z-index: 10; cursor: pointer;"
+        onmouseover="this.style.background='#3730a3'"
+        onmouseout="this.style.background='#111827'"
+        onmousedown="this.style.background='#4338ca'">
       </button>
     <% end %>
   </div>
