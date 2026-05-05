@@ -1,4 +1,4 @@
-<div class="max-w-2xl mx-auto px-4 pt-4 pb-8">
+<div class="max-w-2xl mx-auto px-4 pt-4 pb-8 py-10"> <%# ← 外側に大きな余白を追加 %>
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold">🎵 Brew Tune</h1>
     <%= link_to "← 一覧に戻る", melodies_path,
@@ -54,8 +54,8 @@
       <% end %>
     </div>
 
-    <%# 音色 %>
-    <div class="flex items-center justify-end gap-3 mb-4">
+<%# 音色：w-full を追加して確実に右寄せにします %>
+    <div class="flex items-center justify-end gap-3 mb-4 w-full">
       <div class="flex rounded overflow-hidden border border-gray-200 text-xs">
         <button
           data-action="click->playback#selectSoundType"
