@@ -58,7 +58,7 @@
           data-note="<%= note %>"
           style="background: white; border: 1px solid #9ca3af; border-radius: 0 0 0.25rem 0.25rem; position: relative; cursor: pointer;"
           onmouseover="this.style.background='#e0e7ff'"
-          onmouseout="this.style.background='white'"
+          onmouseout="this.style.background = this.dataset.active === 'true' ? '#c7d2fe' : 'white'"
           onmousedown="this.style.background='#c7d2fe'">
           <span style="position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: #9ca3af;"><%= note %></span>
         </button>
@@ -71,7 +71,7 @@
         data-note="<%= key[:note] %>"
         style="position: absolute; top: 0; left: <%= left %>%; width: 4%; height: 60%; background: #111827; border-radius: 0 0 0.25rem 0.25rem; z-index: 10; cursor: pointer;"
         onmouseover="this.style.background='#3730a3'"
-        onmouseout="this.style.background='#111827'"
+        onmouseout="this.style.background = this.dataset.active === 'true' ? '#4338ca' : '#111827'"
         onmousedown="this.style.background='#4338ca'">
       </button>
     <% end %>
