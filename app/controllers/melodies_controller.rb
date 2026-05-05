@@ -1,6 +1,8 @@
 class MelodiesController < ApplicationController
   def index
+    @theme_filter = params[:theme]
     @melodies = Melody.order(created_at: :desc)
+    @melodies = @melodies.where(theme: @theme_filter) if @theme_filter.present?
     @themes = Melody.distinct.pluck(:theme).compact.reject(&:blank?).sort
   end
 

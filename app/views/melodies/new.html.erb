@@ -85,6 +85,21 @@
     </button>
   </div>
 
+  <%# 音色選択 %>
+  <div class="flex justify-center gap-3 mb-4">
+    <span class="text-sm font-medium self-center">音色</span>
+    <% [["synth", "シンセ"], ["piano", "ピアノ"]].each_with_index do |(type, label), idx| %>
+      <button
+        data-action="click->compose#selectSoundType"
+        data-sound-type="<%= type %>"
+        data-compose-target="soundTypeButton"
+        class="px-3 py-1 rounded-full border text-sm font-medium transition
+               <%= idx == 0 ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
+        <%= label %>
+      </button>
+    <% end %>
+  </div>
+
   <%# 操作ボタン %>
   <div class="flex justify-center gap-4 mb-8">
     <button data-action="click->compose#play"

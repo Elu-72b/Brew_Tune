@@ -17,6 +17,13 @@ const CHORD_TYPES = {
   '0,3,6,10':  'm7b5',
 }
 
+const SAMPLER_URLS = {
+  C4: "C4.mp3", "D#4": "Ds4.mp3", "F#4": "Fs4.mp3",
+  A4: "A4.mp3", C5: "C5.mp3", "D#5": "Ds5.mp3",
+  "F#5": "Fs5.mp3", A5: "A5.mp3", C6: "C6.mp3"
+}
+const SAMPLER_BASE = "https://tonejs.github.io/audio/salamander/"
+
 function detectChord(notes) {
   const pitchClasses = [...new Set(
     notes
@@ -37,7 +44,6 @@ function detectChord(notes) {
     }
   }
 
-  // 2音の場合は音程名で表示
   if (pitchClasses.length === 2) {
     const diff = ((PITCH_TO_SEMITONE[pitchClasses[1]] - PITCH_TO_SEMITONE[pitchClasses[0]]) + 12) % 12
     const INTERVALS = { 1:'短2度', 2:'長2度', 3:'短3度', 4:'長3度', 5:'完全4度', 6:'増4度', 7:'完全5度', 8:'短6度', 9:'長6度', 10:'短7度', 11:'長7度' }
@@ -48,11 +54,12 @@ function detectChord(notes) {
 }
 
 export default class extends Controller {
-  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton", "noteCount", "themeInput", "chordDisplay"]
+  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton", "noteCount", "themeInput", "chordDisplay", "soundTypeButton"]
 
   connect() {
     this.notes = []
     this.bpm = 120
+    this.soundType = 'synth'
     this.synth = null
   }
 
@@ -62,6 +69,19 @@ export default class extends Controller {
 
   selectTheme(event) {
     this.themeInputTarget.value = event.currentTarget.dataset.theme
+  }
+
+  selectSoundType(event) {
+    this.soundType = event.currentTarget.dataset.soundType
+    this.soundTypeButtonTargets.forEach(btn => {
+      const active = btn.dataset.soundType === this.soundType
+      btn.className = btn.className
+        .replace(/bg-indigo-600 text-white border-indigo-600|border-gray-400 text-gray-700 hover:border-indigo-400/, "")
+        .trim()
+      btn.className += active
+        ? " bg-indigo-600 text-white border-indigo-600"
+        : " border-gray-400 text-gray-700 hover:border-indigo-400"
+    })
   }
 
   addNote(event) {
@@ -104,23 +124,38 @@ export default class extends Controller {
     this.updateHiddenFields()
   }
 
+  async createInstrument() {
+    if (this.soundType === 'piano') {
+      return new Promise((resolve) => {
+        const sampler = new Tone.Sampler({
+          urls: SAMPLER_URLS,
+          baseUrl: SAMPLER_BASE,
+          onload: () => resolve(sampler)
+        }).toDestination()
+      })
+    } else {
+      return new Tone.Synth({
+        oscillator: { type: "triangle" },
+        envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.5 }
+      }).toDestination()
+    }
+  }
+
   async play() {
     if (this.notes.length === 0) return
 
     this.stopPlayback()
     await Tone.start()
 
-    this.synth = new Tone.Synth({
-      oscillator: { type: "triangle" },
-      envelope: { attack: 0.02, decay: 0.1, sustain: 0.3, release: 0.5 }
-    }).toDestination()
+    this.synth = await this.createInstrument()
 
     const secPerBeat = 60 / this.bpm
     const now = Tone.now()
+    const duration = this.soundType === 'piano' ? "4n" : "8n"
 
     this.notes.forEach((note, i) => {
       if (note.pitch !== "R") {
-        this.synth.triggerAttackRelease(note.pitch, "8n", now + i * secPerBeat)
+        this.synth.triggerAttackRelease(note.pitch, duration, now + i * secPerBeat)
       }
     })
 
