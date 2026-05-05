@@ -38,7 +38,10 @@
 
           <div class="flex items-start justify-between mb-2">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="font-medium text-gray-800"><%= melody.nickname %></span>
+              <% if melody.title.present? %>
+                <span class="font-semibold text-gray-900"><%= melody.title %></span>
+              <% end %>
+              <span class="font-medium text-gray-600"><%= melody.nickname %></span>
               <span class="text-xs text-gray-400">BPM <%= melody.bpm %></span>
               <% if melody.theme.present? %>
                 <%= link_to melodies_path(theme: melody.theme),
@@ -78,12 +81,16 @@
           </div>
 
           <%# ノートグリッド（32マス）%>
-          <div style="display: grid; grid-template-columns: repeat(32, minmax(0, 1fr)); gap: 2px;">
+          <div style="display: grid; grid-template-columns: repeat(32, minmax(0, 1fr)); gap: 2px; overflow: hidden;">
             <% 32.times do |i| %>
               <% note = melody.notes[i] %>
-              <% bg = note.nil? ? "#f3f4f6" : (note["pitch"] == "R" ? "#e5e7eb" : "#c7d2fe") %>
-              <% border = note.nil? ? "#e5e7eb" : (note["pitch"] == "R" ? "#d1d5db" : "#818cf8") %>
-              <div style="height: 1.25rem; min-width: 0; border-radius: 2px; background: <%= bg %>; border: 1px solid <%= border %>;"></div>
+              <% if note.nil? %>
+                <div style="height:1.25rem;min-width:0;overflow:hidden;border-radius:2px;background:#f3f4f6;border:1px solid #e5e7eb;"></div>
+              <% elsif note["pitch"] == "R" %>
+                <div style="height:1.25rem;min-width:0;overflow:hidden;border-radius:2px;background:#e5e7eb;border:1px solid #d1d5db;display:flex;align-items:center;justify-content:center;font-size:0.4rem;color:#9ca3af;font-family:sans-serif;">休</div>
+              <% else %>
+                <div style="height:1.25rem;min-width:0;overflow:hidden;border-radius:2px;background:#c7d2fe;border:1px solid #818cf8;display:flex;align-items:center;justify-content:center;font-size:0.4rem;color:#3730a3;font-weight:600;font-family:sans-serif;letter-spacing:-0.03em;"><%= note["pitch"] %></div>
+              <% end %>
             <% end %>
           </div>
         </div>
