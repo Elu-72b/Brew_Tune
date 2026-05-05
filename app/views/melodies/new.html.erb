@@ -21,10 +21,10 @@
   </div>
 
   <%# 16マスグリッド %>
-  <div class="grid grid-cols-16 gap-1 mb-6" data-compose-target="grid">
+  <div class="gap-1 mb-6" style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr));" data-compose-target="grid">
     <% 16.times do %>
       <div data-compose-target="cell"
-           class="h-10 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">
+           class="h-10 min-w-0 overflow-hidden rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400">
       </div>
     <% end %>
   </div>
