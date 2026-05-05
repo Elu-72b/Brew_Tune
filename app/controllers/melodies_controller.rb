@@ -43,11 +43,8 @@ class MelodiesController < ApplicationController
   end
 
   def update
-    notes = JSON.parse(params.dig(:melody, :notes_json) || @melody.notes.to_json)
     if @melody.update(
       nickname: params.dig(:melody, :nickname),
-      bpm:      params.dig(:melody, :bpm).to_i,
-      notes:    notes,
       theme:    params.dig(:melody, :theme).presence,
       title:    params.dig(:melody, :title).presence
     )

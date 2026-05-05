@@ -1,148 +1,84 @@
-<div class="max-w-2xl mx-auto px-4 py-8"
-     data-controller="compose"
-     data-compose-initial-notes-value="<%= @melody.notes.to_json %>"
-     data-compose-initial-bpm-value="<%= @melody.bpm %>">
-
+<div class="max-w-2xl mx-auto px-4 py-8">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold">🎵 メロディを編集</h1>
     <%= link_to "← 詳細に戻る", melody_path(@melody), class: "text-sm text-indigo-600 hover:underline" %>
   </div>
 
-  <%# テンポ選択 %>
-  <div class="flex justify-center gap-3 mb-6">
-    <span class="text-sm font-medium self-center">BPM</span>
-    <% [100, 120, 150, 180, 240].each do |bpm| %>
-      <button
-        data-action="click->compose#selectBpm"
-        data-bpm="<%= bpm %>"
-        data-compose-target="bpmButton"
-        class="px-3 py-1 rounded-full border text-sm font-medium transition
-               <%= bpm == @melody.bpm ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
-        <%= bpm %>
-      </button>
-    <% end %>
-  </div>
-
-  <%# 32マスグリッド %>
-  <div class="mb-2"
-       style="display: grid; grid-template-columns: repeat(32, minmax(0, 1fr)); gap: 2px; overflow: hidden;"
-       data-compose-target="grid">
-    <% 32.times do %>
-      <div data-compose-target="cell"
-           style="height: 2rem; min-width: 0; border-radius: 3px; border: 1px dashed #d1d5db; background: #f9fafb;"></div>
-    <% end %>
-  </div>
-  <div class="flex items-center justify-between mb-6">
-    <div class="text-sm font-medium text-indigo-700 min-h-[1.5rem]"
-         data-compose-target="chordDisplay"></div>
-    <p class="text-xs text-gray-400">
-      <span data-compose-target="noteCount">0</span> / 32 音
-    </p>
-  </div>
-
-  <%# ピアノ鍵盤 %>
-  <%
-    white_keys = %w[C4 D4 E4 F4 G4 A4 B4 C5 D5 E5 F5 G5 A5 B5 C6]
-    total = white_keys.size.to_f
-    black_keys = [
-      { note: "C#4", gap: 1 }, { note: "D#4", gap: 2 },
-      { note: "F#4", gap: 4 }, { note: "G#4", gap: 5 }, { note: "A#4", gap: 6 },
-      { note: "C#5", gap: 8 }, { note: "D#5", gap: 9 },
-      { note: "F#5", gap: 11 }, { note: "G#5", gap: 12 }, { note: "A#5", gap: 13 }
-    ]
-  %>
-  <div class="relative select-none mb-3" style="height: 7rem;">
-    <div class="absolute inset-0" style="display: grid; grid-template-columns: repeat(15, 1fr);">
-      <% white_keys.each do |note| %>
-        <button data-action="click->compose#addNote" data-note="<%= note %>"
-          style="background: white; border: 1px solid #9ca3af; border-radius: 0 0 0.25rem 0.25rem; position: relative; cursor: pointer;"
-          onmouseover="this.style.background='#e0e7ff'"
-          onmouseout="this.style.background = this.dataset.active === 'true' ? '#c7d2fe' : 'white'"
-          onmousedown="this.style.background='#c7d2fe'">
-          <span style="position: absolute; bottom: 4px; left: 0; right: 0; text-align: center; font-size: 9px; color: #9ca3af;"><%= note %></span>
-        </button>
+  <%# 曲のプレビュー（変更不可）%>
+  <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-6"
+       data-controller="playback"
+       data-playback-notes-value="<%= @melody.notes.to_json %>"
+       data-playback-bpm-value="<%= @melody.bpm %>">
+    <p class="text-xs text-gray-500 mb-2 font-medium">曲のデータ（編集不可）</p>
+    <div class="flex items-center gap-2 mb-3">
+      <span class="text-xs text-gray-500">BPM <%= @melody.bpm %></span>
+      <span class="text-xs text-gray-400">·</span>
+      <span class="text-xs text-gray-500"><%= @melody.notes.count { |n| n["pitch"] != "R" } %> 音</span>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(32, minmax(0, 1fr)); gap: 2px; overflow: hidden; margin-bottom: 0.75rem;">
+      <% 32.times do |i| %>
+        <% note = @melody.notes[i] %>
+        <% if note.nil? %>
+          <div style="height:1.25rem;min-width:0;overflow:hidden;border-radius:2px;background:#f3f4f6;border:1px solid #e5e7eb;"></div>
+        <% elsif note["pitch"] == "R" %>
+          <div style="height:1.25rem;min-width:0;overflow:hidden;border-radius:2px;background:#e5e7eb;border:1px solid #d1d5db;display:flex;align-items:center;justify-content:center;font-size:0.4rem;color:#9ca3af;font-family:sans-serif;">休</div>
+        <% else %>
+          <div style="height:1.25rem;min-width:0;overflow:hidden;border-radius:2px;background:#c7d2fe;border:1px solid #818cf8;display:flex;align-items:center;justify-content:center;font-size:0.4rem;color:#3730a3;font-weight:600;font-family:sans-serif;letter-spacing:-0.03em;"><%= note["pitch"] %></div>
+        <% end %>
       <% end %>
     </div>
-    <% black_keys.each do |key| %>
-      <% left = (key[:gap] / total * 100 - 2).round(2) %>
-      <button data-action="click->compose#addNote" data-note="<%= key[:note] %>"
-        style="position: absolute; top: 0; left: <%= left %>%; width: 4%; height: 60%; background: #111827; border-radius: 0 0 0.25rem 0.25rem; z-index: 10; cursor: pointer;"
-        onmouseover="this.style.background='#3730a3'"
-        onmouseout="this.style.background = this.dataset.active === 'true' ? '#4338ca' : '#111827'"
-        onmousedown="this.style.background='#4338ca'">
-      </button>
-    <% end %>
-  </div>
-
-  <%# 休符ボタン %>
-  <div class="flex justify-center mb-4">
-    <button data-action="click->compose#addRest"
-            class="px-6 py-2 rounded border-2 border-gray-400 text-gray-600 font-medium hover:bg-gray-100 transition text-sm">
-      𝄽 休符
-    </button>
-  </div>
-
-  <%# 音色選択 %>
-  <div class="flex justify-center gap-3 mb-4">
-    <span class="text-sm font-medium self-center">音色</span>
-    <% [["synth", "シンセ"], ["piano", "ピアノ"]].each_with_index do |(type, label), idx| %>
-      <button data-action="click->compose#selectSoundType"
-              data-sound-type="<%= type %>"
-              data-compose-target="soundTypeButton"
-              class="px-3 py-1 rounded-full border text-sm font-medium transition
-                     <%= idx == 0 ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
-        <%= label %>
-      </button>
-    <% end %>
-  </div>
-
-  <%# 操作ボタン %>
-  <div class="flex justify-center gap-4 mb-8">
-    <button data-action="click->compose#play"
-            data-compose-target="playButton"
-            class="px-6 py-2 rounded bg-indigo-600 text-white font-medium hover:bg-indigo-700 transition text-sm">
+    <button data-action="click->playback#toggle"
+            data-playback-target="playButton"
+            class="px-4 py-1.5 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition">
       ▶ 再生
     </button>
-    <button data-action="click->compose#clear"
-            class="px-5 py-2 rounded border border-gray-400 text-gray-700 hover:bg-gray-100 text-sm">
-      クリア
-    </button>
   </div>
 
-  <%# 編集フォーム %>
+  <%# 編集フォーム（名前・タグ・曲名のみ）%>
   <%= form_with model: @melody, class: "space-y-4" do |f| %>
     <div>
       <%= f.label :nickname, "ニックネーム", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.text_field :nickname, class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
+      <%= f.text_field :nickname,
+          class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
     </div>
 
     <div>
       <%= f.label :theme, "曲のテーマ（任意）", class: "block text-sm font-medium text-gray-700 mb-1" %>
       <% if @themes.any? %>
-        <div class="flex flex-wrap gap-2 mb-2">
+        <div class="flex flex-wrap gap-2 mb-2" data-controller="tagpicker">
           <% @themes.each do |theme| %>
             <button type="button"
-                    data-action="click->compose#toggleTag"
-                    data-theme="<%= theme %>"
+                    onclick="(function(btn){
+                      var inp = btn.closest('[data-controller]').nextElementSibling.querySelector('input');
+                      var tags = inp.value.split(/\s*\/\s*/).map(s=>s.trim()).filter(Boolean);
+                      var idx = tags.indexOf(btn.dataset.tag);
+                      if(idx>=0){tags.splice(idx,1)}else{tags.push(btn.dataset.tag)}
+                      inp.value = tags.join(' / ');
+                      btn.style.background = idx<0 ? '#4f46e5' : '';
+                      btn.style.color = idx<0 ? 'white' : '';
+                      btn.style.borderColor = idx<0 ? '#4f46e5' : '';
+                    })(this)"
+                    data-tag="<%= theme %>"
                     class="px-3 py-1 text-xs rounded-full border border-indigo-300 text-indigo-600 hover:bg-indigo-50 transition">
               <%= theme %>
             </button>
           <% end %>
         </div>
       <% end %>
-      <%= f.text_field :theme, placeholder: "例: 明るい / 癒し",
-          data: { compose_target: "themeInput" },
-          class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
+      <div>
+        <%= f.text_field :theme,
+            placeholder: "例: 明るい / 癒し",
+            class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
+      </div>
     </div>
 
     <div>
       <%= f.label :title, "曲名（任意）", class: "block text-sm font-medium text-gray-700 mb-1" %>
-      <%= f.text_field :title, placeholder: "例: 春の小川",
+      <%= f.text_field :title,
+          placeholder: "例: 春の小川",
           class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
     </div>
 
-    <%= f.hidden_field :bpm, data: { compose_target: "bpmInput" }, value: @melody.bpm %>
-    <div data-compose-target="notesContainer"></div>
     <button type="submit"
             class="w-full bg-indigo-600 text-white py-2 rounded font-medium hover:bg-indigo-700 transition">
       更新する
