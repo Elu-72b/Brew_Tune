@@ -1,12 +1,58 @@
 import { Controller } from "@hotwired/stimulus"
 import * as Tone from "tone"
 
+const NOTE_NAMES = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const PITCH_TO_SEMITONE = Object.fromEntries(NOTE_NAMES.map((n, i) => [n, i]))
+
+const CHORD_TYPES = {
+  '0,4,7':     'maj',
+  '0,3,7':     'm',
+  '0,3,6':     'dim',
+  '0,4,8':     'aug',
+  '0,2,7':     'sus2',
+  '0,5,7':     'sus4',
+  '0,4,7,10':  '7',
+  '0,4,7,11':  'maj7',
+  '0,3,7,10':  'm7',
+  '0,3,6,10':  'm7b5',
+}
+
+function detectChord(notes) {
+  const pitchClasses = [...new Set(
+    notes
+      .filter(n => n.pitch !== 'R')
+      .map(n => n.pitch.replace(/\d+$/, ''))
+  )]
+  if (pitchClasses.length < 2) return null
+
+  const semitones = pitchClasses
+    .map(p => PITCH_TO_SEMITONE[p])
+    .filter(s => s !== undefined)
+
+  for (const root of semitones) {
+    const intervals = [...new Set(semitones.map(s => (s - root + 12) % 12))].sort((a, b) => a - b)
+    const key = intervals.join(',')
+    if (CHORD_TYPES[key]) {
+      return NOTE_NAMES[root] + CHORD_TYPES[key]
+    }
+  }
+
+  // 2音の場合は音程名で表示
+  if (pitchClasses.length === 2) {
+    const diff = ((PITCH_TO_SEMITONE[pitchClasses[1]] - PITCH_TO_SEMITONE[pitchClasses[0]]) + 12) % 12
+    const INTERVALS = { 1:'短2度', 2:'長2度', 3:'短3度', 4:'長3度', 5:'完全4度', 6:'増4度', 7:'完全5度', 8:'短6度', 9:'長6度', 10:'短7度', 11:'長7度' }
+    return INTERVALS[diff] ? `${pitchClasses[0]} - ${pitchClasses[1]}（${INTERVALS[diff]}）` : null
+  }
+
+  return pitchClasses.join(' / ')
+}
+
 export default class extends Controller {
-  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton", "noteCount", "themeInput"]
+  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton", "noteCount", "themeInput", "chordDisplay"]
 
   connect() {
     this.notes = []
-    this.bpm = 80
+    this.bpm = 120
     this.synth = null
   }
 
@@ -80,7 +126,7 @@ export default class extends Controller {
 
     this.setPlayingState(true)
 
-    const totalDuration = (this.notes.length) * secPerBeat * 1000
+    const totalDuration = this.notes.length * secPerBeat * 1000
     this.playTimer = setTimeout(() => this.setPlayingState(false), totalDuration)
   }
 
@@ -126,8 +172,14 @@ export default class extends Controller {
         cell.textContent = ""
       }
     })
+
     if (this.hasNoteCountTarget) {
       this.noteCountTarget.textContent = this.notes.length
+    }
+
+    if (this.hasChordDisplayTarget) {
+      const chord = detectChord(this.notes)
+      this.chordDisplayTarget.textContent = chord ? `🎵 ${chord}` : ""
     }
   }
 

@@ -8,13 +8,13 @@
   <%# テンポ選択 %>
   <div class="flex justify-center gap-3 mb-6">
     <span class="text-sm font-medium self-center">BPM</span>
-    <% [80, 100, 120].each do |bpm| %>
+    <% [100, 120, 150, 180, 240].each do |bpm| %>
       <button
         data-action="click->compose#selectBpm"
         data-bpm="<%= bpm %>"
         data-compose-target="bpmButton"
-        class="px-4 py-1 rounded-full border text-sm font-medium transition
-               <%= bpm == 80 ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
+        class="px-3 py-1 rounded-full border text-sm font-medium transition
+               <%= bpm == 120 ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
         <%= bpm %>
       </button>
     <% end %>
@@ -30,9 +30,13 @@
       </div>
     <% end %>
   </div>
-  <p class="text-xs text-gray-400 text-right mb-6">
-    <span data-compose-target="noteCount">0</span> / 32 音
-  </p>
+  <div class="flex items-center justify-between mb-6">
+    <div class="text-sm font-medium text-indigo-700 min-h-[1.5rem]"
+         data-compose-target="chordDisplay"></div>
+    <p class="text-xs text-gray-400">
+      <span data-compose-target="noteCount">0</span> / 32 音
+    </p>
+  </div>
 
   <%# ピアノ鍵盤 %>
   <%
@@ -123,7 +127,7 @@
           class: "w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400" %>
     </div>
 
-    <%= f.hidden_field :bpm, data: { compose_target: "bpmInput" }, value: 80 %>
+    <%= f.hidden_field :bpm, data: { compose_target: "bpmInput" }, value: 120 %>
     <div data-compose-target="notesContainer"></div>
     <button type="submit"
             class="w-full bg-indigo-600 text-white py-2 rounded font-medium hover:bg-indigo-700 transition">

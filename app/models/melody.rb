@@ -1,6 +1,6 @@
 class Melody < ApplicationRecord
   validates :nickname, presence: true, length: { maximum: 50 }
-  validates :bpm, presence: true, inclusion: { in: [80, 100, 120] }
+  validates :bpm, presence: true, inclusion: { in: [100, 120, 150, 180, 240] }
   validates :notes, presence: true
   validates :theme, length: { maximum: 30 }, allow_blank: true
   validate :notes_length
