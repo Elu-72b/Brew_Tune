@@ -221,21 +221,6 @@ export default class extends Controller {
     }
   }
 
-  updateKeyboard() {
-    const activePitchClasses = new Set(
-      this.notes.filter(n => n.pitch !== 'R').map(n => n.pitch.replace(/\d+$/, ''))
-    )
-    this.element.querySelectorAll('[data-note]').forEach(btn => {
-      const pitchClass = btn.dataset.note.replace(/\d+$/, '')
-      const isBlack = pitchClass.includes('#')
-      const isActive = activePitchClasses.has(pitchClass)
-      btn.dataset.active = isActive
-      btn.style.background = isActive
-        ? (isBlack ? '#4338ca' : '#c7d2fe')
-        : (isBlack ? '#111827' : 'white')
-    })
-  }
-
   updateGrid() {
     this.cellTargets.forEach((cell, i) => {
       const note = this.notes[i]
@@ -260,7 +245,6 @@ export default class extends Controller {
       this.chordDisplayTarget.textContent = chord ? `🎵 ${chord}` : ""
     }
 
-    this.updateKeyboard()
   }
 
   updateHiddenFields() {

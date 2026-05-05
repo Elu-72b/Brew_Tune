@@ -26,9 +26,9 @@ export default class extends Controller {
     this.soundType = event.currentTarget.dataset.soundType
     this.soundTypeButtonTargets.forEach(btn => {
       const active = btn.dataset.soundType === this.soundType
-      btn.style.cssText = active
-        ? "background:#e0e7ff;color:#4338ca;border-color:#a5b4fc;"
-        : "background:white;color:#6b7280;border-color:#d1d5db;"
+      btn.style.background = active ? '#e0e7ff' : 'white'
+      btn.style.color = active ? '#4338ca' : '#6b7280'
+      btn.style.borderColor = active ? '#a5b4fc' : '#d1d5db'
     })
   }
 
