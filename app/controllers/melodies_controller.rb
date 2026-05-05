@@ -8,17 +8,16 @@ class MelodiesController < ApplicationController
   end
 
   def create
-    @melody = Melody.new(melody_params)
+    notes = JSON.parse(params.dig(:melody, :notes_json) || "[]")
+    @melody = Melody.new(
+      nickname: params.dig(:melody, :nickname),
+      bpm: params.dig(:melody, :bpm).to_i,
+      notes: notes
+    )
     if @melody.save
       redirect_to melodies_path
     else
       render :new, status: :unprocessable_entity
     end
-  end
-
-  private
-
-  def melody_params
-    params.expect(melody: [:nickname, :bpm, notes: []])
   end
 end
