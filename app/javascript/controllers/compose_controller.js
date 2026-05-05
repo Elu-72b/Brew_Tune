@@ -61,14 +61,32 @@ export default class extends Controller {
     this.bpm = 120
     this.soundType = 'synth'
     this.synth = null
+    this.selectedTags = []
   }
 
   disconnect() {
     this.stopPlayback()
   }
 
-  selectTheme(event) {
-    this.themeInputTarget.value = event.currentTarget.dataset.theme
+  toggleTag(event) {
+    const tag = event.currentTarget.dataset.theme
+    const idx = this.selectedTags.indexOf(tag)
+    if (idx >= 0) {
+      this.selectedTags.splice(idx, 1)
+    } else {
+      this.selectedTags.push(tag)
+    }
+    this.themeInputTarget.value = this.selectedTags.join(' / ')
+    this.updateTagButtons()
+  }
+
+  updateTagButtons() {
+    this.element.querySelectorAll('[data-theme]').forEach(btn => {
+      const selected = this.selectedTags.includes(btn.dataset.theme)
+      btn.style.background = selected ? '#4f46e5' : ''
+      btn.style.color = selected ? 'white' : ''
+      btn.style.borderColor = selected ? '#4f46e5' : ''
+    })
   }
 
   selectSoundType(event) {
@@ -218,8 +236,8 @@ export default class extends Controller {
         cell.style.cssText = "height:2rem;min-width:0;overflow:hidden;border-radius:3px;border:1px solid #d1d5db;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:#6b7280;font-family:sans-serif;"
         cell.textContent = "休"
       } else {
-        cell.style.cssText = "height:2rem;min-width:0;overflow:hidden;border-radius:3px;border:1px solid #818cf8;background:#c7d2fe;"
-        cell.textContent = ""
+        cell.style.cssText = "height:2rem;min-width:0;overflow:hidden;border-radius:3px;border:1px solid #818cf8;background:#c7d2fe;display:flex;align-items:center;justify-content:center;font-size:0.55rem;color:#3730a3;font-weight:600;font-family:sans-serif;letter-spacing:-0.02em;"
+        cell.textContent = note.pitch
       }
     })
 

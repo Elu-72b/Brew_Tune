@@ -2,13 +2,22 @@ class MelodiesController < ApplicationController
   def index
     @theme_filter = params[:theme]
     @melodies = Melody.order(created_at: :desc)
-    @melodies = @melodies.where(theme: @theme_filter) if @theme_filter.present?
-    @themes = Melody.distinct.pluck(:theme).compact.reject(&:blank?).sort
+    if @theme_filter.present?
+      escaped = @theme_filter.gsub('%', '\%').gsub('_', '\_')
+      @melodies = @melodies.where(
+        "(' / ' || theme || ' / ') LIKE ?", "% / #{escaped} / %"
+      )
+    end
+    @themes = Melody.pluck(:theme).compact.reject(&:blank?)
+      .flat_map { |t| t.split(/\s*\/\s*/) }.map(&:strip)
+      .reject(&:blank?).uniq.sort
   end
 
   def new
     @melody = Melody.new
-    @themes = Melody.distinct.pluck(:theme).compact.reject(&:blank?).sort
+    @themes = Melody.pluck(:theme).compact.reject(&:blank?)
+      .flat_map { |t| t.split(/\s*\/\s*/) }.map(&:strip)
+      .reject(&:blank?).uniq.sort
   end
 
   def create
@@ -17,12 +26,15 @@ class MelodiesController < ApplicationController
       nickname: params.dig(:melody, :nickname),
       bpm:      params.dig(:melody, :bpm).to_i,
       notes:    notes,
-      theme:    params.dig(:melody, :theme).presence
+      theme:    params.dig(:melody, :theme).presence,
+      title:    params.dig(:melody, :title).presence
     )
     if @melody.save
       redirect_to melodies_path
     else
-      @themes = Melody.distinct.pluck(:theme).compact.reject(&:blank?).sort
+      @themes = Melody.pluck(:theme).compact.reject(&:blank?)
+        .flat_map { |t| t.split(/\s*\/\s*/) }.map(&:strip)
+        .reject(&:blank?).uniq.sort
       render :new, status: :unprocessable_entity
     end
   end
