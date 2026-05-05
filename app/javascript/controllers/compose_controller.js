@@ -24,6 +24,14 @@ export default class extends Controller {
     this.updateHiddenFields()
   }
 
+  addRest() {
+    if (this.notes.length >= 16) return
+
+    this.notes.push({ pitch: "R", time: this.notes.length })
+    this.updateGrid()
+    this.updateHiddenFields()
+  }
+
   selectBpm(event) {
     this.bpm = parseInt(event.currentTarget.dataset.bpm)
     this.bpmInputTarget.value = this.bpm
@@ -61,7 +69,9 @@ export default class extends Controller {
     const now = Tone.now()
 
     this.notes.forEach((note, i) => {
-      this.synth.triggerAttackRelease(note.pitch, "8n", now + i * secPerBeat)
+      if (note.pitch !== "R") {
+        this.synth.triggerAttackRelease(note.pitch, "8n", now + i * secPerBeat)
+      }
     })
 
     this.setPlayingState(true)
@@ -101,12 +111,15 @@ export default class extends Controller {
   updateGrid() {
     this.cellTargets.forEach((cell, i) => {
       const note = this.notes[i]
-      if (note) {
-        cell.textContent = note.pitch
-        cell.className = "h-10 rounded border-2 flex items-center justify-center text-xs bg-indigo-100 border-indigo-400 text-indigo-700 font-medium"
-      } else {
-        cell.className = "h-10 rounded border-2 border-dashed border-gray-300 flex items-center justify-center text-xs text-gray-400"
+      if (!note) {
+        cell.style.cssText = "height:2.5rem;min-width:0;overflow:hidden;border-radius:0.25rem;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#9ca3af;"
         cell.textContent = ""
+      } else if (note.pitch === "R") {
+        cell.style.cssText = "height:2.5rem;min-width:0;overflow:hidden;border-radius:0.25rem;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#6b7280;background:#f9fafb;"
+        cell.textContent = "𝄽"
+      } else {
+        cell.style.cssText = "height:2.5rem;min-width:0;overflow:hidden;border-radius:0.25rem;border:2px solid #818cf8;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#4338ca;background:#e0e7ff;font-weight:500;"
+        cell.textContent = note.pitch
       }
     })
   }

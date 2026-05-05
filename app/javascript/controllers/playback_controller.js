@@ -36,7 +36,9 @@ export default class extends Controller {
     const now = Tone.now()
 
     this.notesValue.forEach((note, i) => {
-      this.synth.triggerAttackRelease(note.pitch, "8n", now + i * secPerBeat)
+      if (note.pitch !== "R") {
+        this.synth.triggerAttackRelease(note.pitch, "8n", now + i * secPerBeat)
+      }
     })
 
     this.setPlaying(true)
