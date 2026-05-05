@@ -1,5 +1,9 @@
 <div class="max-w-2xl mx-auto px-4 py-8" data-controller="compose">
-  <h1 class="text-2xl font-bold text-center mb-6">🎵 Brew Tune</h1>
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold">🎵 Brew Tune</h1>
+    <%= link_to "一覧を見る", melodies_path,
+        class: "text-sm text-indigo-600 hover:underline" %>
+  </div>
 
   <%# テンポ選択 %>
   <div class="flex justify-center gap-3 mb-6">
