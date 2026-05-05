@@ -38,11 +38,11 @@
              onclick="if(!event.target.closest('button,a,form')){window.location='<%= melody_path(melody) %>'}">
 
           <%# 1行目: 曲名・ニックネーム %>
-          <div class="flex items-baseline gap-2 mb-1">
+          <div class="flex items-baseline gap-3 mb-1">
             <% if melody.title.present? %>
-              <span class="font-semibold text-gray-900 text-sm"><%= melody.title %></span>
+              <span class="text-xs text-gray-400">曲名：</span><span class="font-semibold text-gray-900 text-sm"><%= melody.title %></span>
             <% end %>
-            <span class="text-sm text-gray-500"><%= melody.nickname %></span>
+            <span class="text-xs text-gray-400">ニックネーム：</span><span class="text-sm text-gray-600"><%= melody.nickname %></span>
           </div>
 
           <%# 2行目: 日付・音色・再生・X %>
@@ -79,7 +79,8 @@
 
           <%# 3行目: タグ %>
           <% if melody.theme.present? %>
-            <div class="flex flex-wrap gap-1 mb-2">
+            <div class="flex flex-wrap items-center gap-1 mb-2">
+              <span class="text-xs text-gray-400">テーマ：</span>
               <% melody.theme.split(/\s*\/\s*/).map(&:strip).each do |tag| %>
                 <%= link_to melodies_path(theme: tag),
                     style: "padding:2px 8px;font-size:0.7rem;border-radius:9999px;background:#e0e7ff;color:#4338ca;border:1px solid #c7d2fe;text-decoration:none;" do %>
