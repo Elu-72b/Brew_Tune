@@ -197,13 +197,13 @@ export default class extends Controller {
     this.cellTargets.forEach((cell, i) => {
       const note = this.notes[i]
       if (!note) {
-        cell.style.cssText = "height:2rem;min-width:0;border-radius:3px;border:1px dashed #d1d5db;background:#f9fafb;"
+        cell.style.cssText = "height:2rem;min-width:0;overflow:hidden;border-radius:3px;border:1px dashed #d1d5db;background:#f9fafb;"
         cell.textContent = ""
       } else if (note.pitch === "R") {
-        cell.style.cssText = "height:2rem;min-width:0;border-radius:3px;border:1px solid #d1d5db;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#6b7280;"
-        cell.textContent = "𝄽"
+        cell.style.cssText = "height:2rem;min-width:0;overflow:hidden;border-radius:3px;border:1px solid #d1d5db;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:#6b7280;font-family:sans-serif;"
+        cell.textContent = "休"
       } else {
-        cell.style.cssText = "height:2rem;min-width:0;border-radius:3px;border:1px solid #818cf8;background:#c7d2fe;"
+        cell.style.cssText = "height:2rem;min-width:0;overflow:hidden;border-radius:3px;border:1px solid #818cf8;background:#c7d2fe;"
         cell.textContent = ""
       }
     })
