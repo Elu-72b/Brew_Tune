@@ -31,10 +31,10 @@
           </div>
 
           <%# ノートグリッド（読み取り専用）%>
-          <div class="grid grid-cols-16 gap-1">
+          <div class="gap-1" style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr));">
             <% 16.times do |i| %>
               <% note = melody.notes[i] %>
-              <div class="h-7 rounded text-[8px] flex items-center justify-center
+              <div class="h-7 min-w-0 overflow-hidden rounded text-[8px] flex items-center justify-center
                           <%= note ? 'bg-indigo-100 border border-indigo-300 text-indigo-600 font-medium' : 'bg-gray-100 border border-gray-200 text-gray-300' %>">
                 <%= note ? note["pitch"] : "" %>
               </div>
