@@ -1,9 +1,20 @@
 <div class="max-w-2xl mx-auto px-4 py-8">
-  <div class="flex items-center justify-between mb-6">
+  <div class="flex items-center justify-between mb-4">
     <h1 class="text-2xl font-bold">🎵 みんなのメロディ</h1>
     <%= link_to "＋ 作曲する", new_melody_path,
         class: "px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition" %>
   </div>
+
+  <%# テーマタグ一覧 %>
+  <% if @themes.any? %>
+    <div class="flex flex-wrap gap-2 mb-6">
+      <% @themes.each do |theme| %>
+        <span class="px-3 py-1 text-xs rounded-full bg-indigo-100 text-indigo-700 border border-indigo-200">
+          # <%= theme %>
+        </span>
+      <% end %>
+    </div>
+  <% end %>
 
   <% if @melodies.empty? %>
     <p class="text-center text-gray-400 py-16">まだ投稿がありません</p>
@@ -15,36 +26,36 @@
              data-playback-notes-value="<%= melody.notes.to_json %>"
              data-playback-bpm-value="<%= melody.bpm %>">
 
-          <div class="flex items-center justify-between mb-3">
-            <div>
+          <div class="flex items-start justify-between mb-2">
+            <div class="flex flex-wrap items-center gap-2">
               <span class="font-medium text-gray-800"><%= melody.nickname %></span>
-              <span class="ml-2 text-xs text-gray-400">BPM <%= melody.bpm %></span>
+              <span class="text-xs text-gray-400">BPM <%= melody.bpm %></span>
+              <% if melody.theme.present? %>
+                <span class="px-2 py-0.5 text-xs rounded-full bg-indigo-100 text-indigo-600 border border-indigo-200">
+                  # <%= melody.theme %>
+                </span>
+              <% end %>
             </div>
-            <div class="flex items-center gap-2">
-              <span class="text-xs text-gray-400"><%= melody.created_at.strftime("%Y/%m/%d %H:%M") %></span>
+            <div class="flex items-center gap-2 shrink-0 ml-2">
+              <span class="text-xs text-gray-400"><%= melody.created_at.strftime("%Y/%m/%d") %></span>
               <button data-action="click->playback#toggle"
                       data-playback-target="playButton"
-                      class="px-4 py-1 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition">
+                      class="px-3 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition">
                 ▶ 再生
               </button>
+              <%= button_to "削除", melody_path(melody), method: :delete,
+                  data: { turbo_confirm: "削除しますか？" },
+                  class: "px-3 py-1 bg-white text-red-500 text-xs rounded border border-red-300 hover:bg-red-50 transition cursor-pointer" %>
             </div>
           </div>
 
-          <%# ノートグリッド（読み取り専用）%>
-          <div class="gap-1" style="display: grid; grid-template-columns: repeat(16, minmax(0, 1fr));">
-            <% 16.times do |i| %>
+          <%# ノートグリッド（32マス）%>
+          <div style="display: grid; grid-template-columns: repeat(32, minmax(0, 1fr)); gap: 2px;">
+            <% 32.times do |i| %>
               <% note = melody.notes[i] %>
-              <% cell_style = if note.nil?
-                   "bg-gray-100 border border-gray-200 text-gray-300"
-                 elsif note["pitch"] == "R"
-                   "bg-gray-50 border border-gray-300 text-gray-400"
-                 else
-                   "bg-indigo-100 border border-indigo-300 text-indigo-600 font-medium"
-                 end %>
-              <div class="h-7 min-w-0 overflow-hidden rounded flex items-center justify-center <%= cell_style %>"
-                   style="font-size: 0.6rem;">
-                <%= note.nil? ? "" : (note["pitch"] == "R" ? "𝄽" : note["pitch"]) %>
-              </div>
+              <% bg = note.nil? ? "#f3f4f6" : (note["pitch"] == "R" ? "#e5e7eb" : "#c7d2fe") %>
+              <% border = note.nil? ? "#e5e7eb" : (note["pitch"] == "R" ? "#d1d5db" : "#818cf8") %>
+              <div style="height: 1.25rem; min-width: 0; border-radius: 2px; background: <%= bg %>; border: 1px solid <%= border %>;"></div>
             <% end %>
           </div>
         </div>

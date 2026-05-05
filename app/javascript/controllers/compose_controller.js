@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import * as Tone from "tone"
 
 export default class extends Controller {
-  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton"]
+  static targets = ["cell", "bpmButton", "bpmInput", "notesContainer", "playButton", "noteCount", "themeInput"]
 
   connect() {
     this.notes = []
@@ -14,9 +14,13 @@ export default class extends Controller {
     this.stopPlayback()
   }
 
+  selectTheme(event) {
+    this.themeInputTarget.value = event.currentTarget.dataset.theme
+  }
+
   addNote(event) {
     event.stopPropagation()
-    if (this.notes.length >= 16) return
+    if (this.notes.length >= 32) return
 
     const note = event.currentTarget.dataset.note
     this.notes.push({ pitch: note, time: this.notes.length })
@@ -25,7 +29,7 @@ export default class extends Controller {
   }
 
   addRest() {
-    if (this.notes.length >= 16) return
+    if (this.notes.length >= 32) return
 
     this.notes.push({ pitch: "R", time: this.notes.length })
     this.updateGrid()
@@ -112,16 +116,19 @@ export default class extends Controller {
     this.cellTargets.forEach((cell, i) => {
       const note = this.notes[i]
       if (!note) {
-        cell.style.cssText = "height:2.5rem;min-width:0;overflow:hidden;border-radius:0.25rem;border:2px dashed #d1d5db;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#9ca3af;"
+        cell.style.cssText = "height:2rem;min-width:0;border-radius:3px;border:1px dashed #d1d5db;background:#f9fafb;"
         cell.textContent = ""
       } else if (note.pitch === "R") {
-        cell.style.cssText = "height:2.5rem;min-width:0;overflow:hidden;border-radius:0.25rem;border:2px solid #d1d5db;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#6b7280;background:#f9fafb;"
+        cell.style.cssText = "height:2rem;min-width:0;border-radius:3px;border:1px solid #d1d5db;background:#e5e7eb;display:flex;align-items:center;justify-content:center;font-size:0.7rem;color:#6b7280;"
         cell.textContent = "𝄽"
       } else {
-        cell.style.cssText = "height:2.5rem;min-width:0;overflow:hidden;border-radius:0.25rem;border:2px solid #818cf8;display:flex;align-items:center;justify-content:center;font-size:0.75rem;color:#4338ca;background:#e0e7ff;font-weight:500;"
-        cell.textContent = note.pitch
+        cell.style.cssText = "height:2rem;min-width:0;border-radius:3px;border:1px solid #818cf8;background:#c7d2fe;"
+        cell.textContent = ""
       }
     })
+    if (this.hasNoteCountTarget) {
+      this.noteCountTarget.textContent = this.notes.length
+    }
   }
 
   updateHiddenFields() {
