@@ -7,6 +7,7 @@ class Melody < ApplicationRecord
   private
 
   def notes_length
+    return unless notes.is_a?(Array)
     errors.add(:notes, :too_long) if notes.length > 16
   end
 end
