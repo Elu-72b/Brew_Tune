@@ -10,6 +10,7 @@ class MelodiesController < ApplicationController
         "(' / ' || theme || ' / ') LIKE ?", "% / #{escaped} / %"
       )
     end
+    @melodies = @melodies.page(params[:page]).per(10)
     @themes = all_tags
   end
 
