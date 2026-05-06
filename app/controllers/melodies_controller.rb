@@ -10,6 +10,7 @@ class MelodiesController < ApplicationController
         "(' / ' || theme || ' / ') LIKE ?", "% / #{escaped} / %"
       )
     end
+    @melodies = @melodies.page(params[:page]).per(10)
     @themes = all_tags
   end
 
@@ -45,6 +46,7 @@ class MelodiesController < ApplicationController
   def update
     if @melody.update(
       nickname: params.dig(:melody, :nickname),
+      bpm:      params.dig(:melody, :bpm).to_i,
       theme:    params.dig(:melody, :theme).presence,
       title:    params.dig(:melody, :title).presence
     )

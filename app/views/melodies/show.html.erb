@@ -109,7 +109,7 @@
         </button>
 
         <%# X シェアボタン %>
-        <% tweet_text = @melody.title.present? ? "🎵 「#{@melody.title}」をBrewTuneで作りました！" : "🎵 BrewTuneでメロディを作りました！" %>
+        <% tweet_text = @melody.title.present? ? "🎵 お気に入りの曲は「#{@melody.title}」！" : "🎵 BrewTuneのお気に入りの曲はこれ！" %>
         <% tweet_url = melody_url(@melody) %>
         <%= link_to "https://twitter.com/intent/tweet?text=#{CGI.escape(tweet_text + " #BrewTune")}&url=#{CGI.escape(tweet_url)}",
             target: "_blank", rel: "noopener noreferrer",
