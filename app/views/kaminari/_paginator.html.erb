@@ -1,16 +1,30 @@
-<%# kaminari paginator %>
+<%# app/views/kaminari/_paginator.html.erb %>
 <%= paginator.render do %>
-  <nav style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-    <%= first_page_tag unless current_page.first? %>
-    <%= prev_page_tag unless current_page.first? %>
-    <%= each_page do |page| %>
-      <% if page.display_tag? %>
-        <%= page %>
-      <% else %>
-        <%= gap_tag %>
-      <% end %>
-    <% end %>
-    <%= next_page_tag unless current_page.last? %>
-    <%= last_page_tag unless current_page.last? %>
+  <nav class="flex flex-col items-center gap-4 my-8" role="navigation" aria-label="pager">
+    
+    <%# 「1 / 2」のようなページ表示 %>
+    <div class="text-sm text-gray-500 font-medium">
+      <span class="text-indigo-600"><%= current_page %></span>
+      <span class="mx-1">/</span>
+      <%= total_pages %>
+    </div>
+
+    <div class="flex border border-gray-200 rounded-md bg-white shadow-sm overflow-hidden">
+      <%= first_page_tag unless current_page.first? %>
+      <%= prev_page_tag unless current_page.first? %>
+      
+      <div class="hidden sm:flex">
+        <%= each_page do |page| %>
+          <% if page.display_tag? %>
+            <%= page %>
+          <% else %>
+            <%= gap_tag %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <%= next_page_tag unless current_page.last? %>
+      <%= last_page_tag unless current_page.last? %>
+    </div>
   </nav>
 <% end %>
