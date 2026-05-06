@@ -1,8 +1,8 @@
 <%# kaminari page link %>
 <%= link_to_unless page.current? do %>
-  <%= link_to page, url, style: "padding:6px 12px;border-radius:6px;font-size:0.875rem;text-decoration:none;#{page.current? ? 'background:#4f46e5;color:white;font-weight:600;' : 'background:white;color:#374151;border:1px solid #d1d5db;'}" %>
+  <%= link_to page, url, style: "padding:6px 12px;border-radius:2px;font-size:0.875rem;text-decoration:none;#{page.current? ? 'background:#4f46e5;color:white;font-weight:600;' : 'background:white;color:#374151;border:1px solid #d1d5db;'}" %>
 <% end do %>
-  <span style="padding:6px 12px;border-radius:6px;font-size:0.875rem;background:#4f46e5;color:white;font-weight:600;">
+  <span style="padding:6px 12px;border-radius:2px;font-size:0.875rem;background:#4f46e5;color:white;font-weight:600;">
     <%= page %>
   </span>
 <% end %>
