@@ -8,7 +8,7 @@
   <%# テンポ選択 %>
   <div class="flex justify-center gap-3 mb-6">
     <span class="text-sm font-medium self-center">BPM</span>
-    <% [100, 120, 150, 180, 240].each do |bpm| %>
+    <% [100, 120, 150, 180, 240, 300, 360].each do |bpm| %>
       <button
         data-action="click->compose#selectBpm"
         data-bpm="<%= bpm %>"
