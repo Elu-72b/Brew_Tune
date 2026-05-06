@@ -5,9 +5,9 @@
         class: "px-4 py-2 bg-indigo-600 text-white text-sm rounded hover:bg-indigo-700 transition" %>
   </div>
 
-  <%# テンポ選択 %>
-  <div class="flex justify-center gap-3 mb-6">
-    <span class="text-sm font-medium self-center">BPM</span>
+  <%# テンポ選択 + 音色選択 %>
+  <div class="flex flex-wrap items-center gap-2 mb-6">
+    <span class="text-sm font-medium">BPM</span>
     <% [100, 120, 150, 180, 240, 300, 360].each do |bpm| %>
       <button
         data-action="click->compose#selectBpm"
@@ -16,6 +16,18 @@
         class="px-3 py-1 rounded-full border text-sm font-medium transition
                <%= bpm == 120 ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
         <%= bpm %>
+      </button>
+    <% end %>
+    <span style="border-left:1px solid #d1d5db;height:1.25rem;margin:0 0.25rem;"></span>
+    <span class="text-sm font-medium">音色</span>
+    <% [["synth", "シンセ"], ["piano", "ピアノ"]].each_with_index do |(type, label), idx| %>
+      <button
+        data-action="click->compose#selectSoundType"
+        data-sound-type="<%= type %>"
+        data-compose-target="soundTypeButton"
+        class="px-3 py-1 rounded-full border text-sm font-medium transition
+               <%= idx == 0 ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
+        <%= label %>
       </button>
     <% end %>
   </div>
@@ -77,7 +89,7 @@
     <% end %>
   </div>
 
-  <%# 再生 + 休符ボタン %>
+  <%# 再生 + 休符 + クリアボタン %>
   <div class="flex justify-center gap-3 mb-4">
     <button data-action="click->compose#play"
             data-compose-target="playButton"
@@ -88,21 +100,6 @@
             class="px-6 py-2 rounded border-2 border-gray-400 text-gray-600 font-medium hover:bg-gray-100 transition text-sm">
       𝄽 休符
     </button>
-  </div>
-
-  <%# 音色選択 + クリア %>
-  <div class="flex justify-center gap-3 mb-4">
-    <span class="text-sm font-medium self-center">音色</span>
-    <% [["synth", "シンセ"], ["piano", "ピアノ"]].each_with_index do |(type, label), idx| %>
-      <button
-        data-action="click->compose#selectSoundType"
-        data-sound-type="<%= type %>"
-        data-compose-target="soundTypeButton"
-        class="px-3 py-1 rounded-full border text-sm font-medium transition
-               <%= idx == 0 ? 'bg-indigo-600 text-white border-indigo-600' : 'border-gray-400 text-gray-700 hover:border-indigo-400' %>">
-        <%= label %>
-      </button>
-    <% end %>
     <button type="button" data-action="click->compose#clear"
             style="padding:0.5rem 1.25rem;background:#ef4444;color:white;border-radius:0.375rem;font-size:0.875rem;font-weight:500;">
       クリア
