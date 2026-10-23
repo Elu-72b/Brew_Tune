@@ -36,3 +36,7 @@
 
 /app/assets/builds/*
 !/app/assets/builds/.keep
+
+# Local planning notes
+/docs/plans/
+/.claude/settings.local.json

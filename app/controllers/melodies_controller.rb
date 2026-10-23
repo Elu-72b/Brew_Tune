@@ -1,11 +1,11 @@
 class MelodiesController < ApplicationController
-  before_action :set_melody, only: [:show, :edit, :update, :destroy]
+  before_action :set_melody, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @theme_filter = params[:theme]
     @melodies = Melody.order(created_at: :desc)
     if @theme_filter.present?
-      escaped = @theme_filter.gsub('%', '\%').gsub('_', '\_')
+      escaped = @theme_filter.gsub("%", '\%').gsub("_", '\_')
       @melodies = @melodies.where(
         "(' / ' || theme || ' / ') LIKE ?", "% / #{escaped} / %"
       )
