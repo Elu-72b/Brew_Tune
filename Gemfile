@@ -41,7 +41,7 @@ gem "thruster", require: false
 
 # Use Active Storage variants [https://guides.rubyonrails.org/active_storage_overview.html#transforming-images]
 gem "image_processing", "~> 2.0"
-gem "ruby-vips"
+gem "ruby-vips", require: false
 gem "kaminari"
 
 group :development, :test do
